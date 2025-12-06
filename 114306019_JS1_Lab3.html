@@ -48,7 +48,7 @@
 		}else{
 			if (guess < answer) {
 				min = Math.max(min, guess + 1);
-				alert('錯了ㄛ，請輸入'+min+'到'+max+"之間的整數，\n你還有"+chances+"次機會");
+				alert('錯了ㄛ，請輸入'+min+'到'+max+"之間的整數");
 				document.getElementById("result").innerHTML = '<img src="wrong.jpg" alt="wrong">';
 				chances--;
 			} else {
@@ -58,7 +58,12 @@
 				chances--;
 			}
 		}	
-	}alert('很可惜！你已經沒有機會了。 \n正確答案是'+answer+'差一點就猜對了！');	
+	}
+
+	if(!isCorrect &&chances===0){
+		alert('很可惜！你已經沒有機會了。 \n正確答案是'+answer+'差一點就猜對了！')
+	};	
+
 
 </script>
 
