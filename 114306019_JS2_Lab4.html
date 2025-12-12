@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成績計算器</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #grades-table thead tr {
+            background-color: #e6e6e6; /* 淺灰色 */
+        }
+
+        #grades-table tfoot td {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #grades-table tbody td:nth-child(n+2),
+        #grades-table tfoot td:nth-child(n+2) {
+    
+        }
+        .footer-label {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+  
+
+    <div id="input-area">
+        <label for="math-input"></label>
+        <input type="text" id="math-input" placeholder="Math" min="0" max="100">
+
+        <label for="english-input"></label>
+        <input type="text" id="english-input" placeholder="English" min="0" max="100">
+
+        <button id="submit-btn">Submit</button>
+    </div>
+
+    <table id="grades-table" border="1" style="width: 50%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Math</th>
+                <th>English</th>
+                <th>Average</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            </tbody>
+        <tfoot>
+            <tr>
+                <td class="footer-label">Average</td>
+                <td id="avg-math">0.00</td>
+                <td id="avg-english">0.00</td>
+                <td id="avg-overall">0.00</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+       
+        let rowCount = 0;
+
+        const mathInput = document.getElementById('math-input');
+        const englishInput = document.getElementById('english-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const tableBody = document.getElementById('table-body');
+        const avgMathCell = document.getElementById('avg-math');
+        const avgEnglishCell = document.getElementById('avg-english');
+        const avgOverallCell = document.getElementById('avg-overall');
+
+        // 輔助函數：將數字格式化為兩位小數
+        function formatNumber(num) {
+            if (isNaN(num)) return '0.00';
+            return num.toFixed(2);
+        }
+
+        
+        function updateColumnAverages() {
+            const allMathGrades = [];
+            const allEnglishGrades = [];
+            
+           
+            const rows = tableBody.getElementsByTagName('tr');
+
+            if (rows.length === 0) {
+         
+                avgMathCell.textContent = '0.00';
+                avgEnglishCell.textContent = '0.00';
+                avgOverallCell.textContent = '0.00';
+                return;
+            }
+
+            // 迭代每一行，收集成績數據
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                // cells[1] 是 Math, cells[2] 是 English
+                const mathGrade = parseFloat(cells[1].textContent);
+                const englishGrade = parseFloat(cells[2].textContent);
+
+                if (!isNaN(mathGrade)) allMathGrades.push(mathGrade);
+                if (!isNaN(englishGrade)) allEnglishGrades.push(englishGrade);
+            }
+
+            // 計算平均值的輔助函數
+            const calculateAverage = (grades) => {
+                if (grades.length === 0) return 0;
+                const sum = grades.reduce((acc, val) => acc + val, 0);
+                return sum / grades.length;
+            };
+
+            // 計算欄位平均值 
+            const avgMath = calculateAverage(allMathGrades);
+            const avgEnglish = calculateAverage(allEnglishGrades);
+            
+            // 整體平均值 
+            const allGrades = [...allMathGrades, ...allEnglishGrades];
+            const avgOverall = calculateAverage(allGrades);
+
+            // 顯示結果到 footer
+            avgMathCell.textContent = formatNumber(avgMath);
+            avgEnglishCell.textContent = formatNumber(avgEnglish);
+            avgOverallCell.textContent = formatNumber(avgOverall);
+        }
+
+
+        // 4. 函數：添加新行
+        function addGradeRow(math, english) {
+            rowCount++; // 增加行計數
+            const avgScore = (math + english) / 2; // 
+
+            // 創建新的表格行
+            const newRow = tableBody.insertRow();
+            
+            // # (行號)
+            const cell1 = newRow.insertCell();
+            cell1.textContent = rowCount;
+
+            //  Math
+            const cell2 = newRow.insertCell();
+            cell2.textContent = math.toFixed(0);
+
+            // English
+            const cell3 = newRow.insertCell();
+            cell3.textContent = english.toFixed(0);
+
+
+            const cell4 = newRow.insertCell();
+            cell4.textContent = formatNumber(avgScore);
+        }
+
+
+
+
+        submitBtn.addEventListener('click', function() {
+  
+            const mathGrade = parseFloat(mathInput.value);
+            const englishGrade = parseFloat(englishInput.value);
+
+  
+            if (isNaN(mathGrade) || isNaN(englishGrade) || mathGrade < 0 || englishGrade < 0 || mathGrade > 100 || englishGrade > 100) {
+                alert('請為數學和英文輸入介於 0 到 100 之間的有效成績。');
+                return;
+            }
+
+ 
+            addGradeRow(mathGrade, englishGrade);
+
+
+            mathInput.value = '';
+            englishInput.value = '';
+            
+ 
+            updateColumnAverages();
+        });
+
+        updateColumnAverages();
+    </script>
+</body>
+</html>
